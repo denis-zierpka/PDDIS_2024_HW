@@ -1,0 +1,24 @@
+services:
+  server:
+    container_name: server
+    image: deniszierpka/pddis_2024_hw-hw3-server:latest 
+    ports:
+      - "3000:3000"
+    networks:
+      - tmp-network 
+
+  client:
+    container_name: client
+    image: deniszierpka/pddis_2024_hw-hw3-client:latest 
+    ports:
+      - "8000:8000"
+    depends_on:
+      - server
+    networks:
+      - tmp-network
+
+
+networks:
+  tmp-network:
+    name: tmp-network
+    external: true

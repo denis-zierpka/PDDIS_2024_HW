@@ -1,0 +1,24 @@
+services:
+  server:
+    container_name: server
+    image: server
+    ports:
+      - "3000:3000"
+    networks:
+      - tmp-network 
+
+  client:
+    container_name: client
+    image: client
+    ports:
+      - "8000:8000"
+    depends_on:
+      - server
+    networks:
+      - tmp-network
+
+
+networks:
+  tmp-network:
+    name: tmp-network
+    external: true
