@@ -1,0 +1,28 @@
+services:
+  builder:
+    container_name: builder
+    image: builder
+    volumes:
+      - ./app:/app
+      - ./ansible:/ansible
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "5000:5000"
+    networks:
+      - tmp-network
+
+  nginx:
+    container_name: nginx
+    image: nginx
+    volumes:
+      - ./ansible:/ansible
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "80:80"
+    networks:
+      - tmp-network
+
+networks:
+  tmp-network:
+    name: tmp-network
+    external: true

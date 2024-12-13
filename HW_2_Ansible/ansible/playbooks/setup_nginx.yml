@@ -1,0 +1,27 @@
+---
+- name: Set up Nginx
+  hosts: all
+  gather_facts: False
+
+  tasks:
+    - name: Create directory if not exist
+      file:
+        path: /run/nginx/
+        state: directory
+
+    - name: Install Nginx
+      apk:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Configure Nginx
+      template:
+        src: templates/nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+        mode: '0644'
+
+    - name: Start
+      shell: setsid nginx > /dev/null 2>&1 &
+      args:
+        executable: /bin/ash  

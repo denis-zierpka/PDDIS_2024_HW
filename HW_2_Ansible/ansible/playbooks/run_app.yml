@@ -1,0 +1,12 @@
+---
+- name: Run application
+  hosts: all
+  gather_facts: False
+
+  tasks:
+    # Используем ash + setsid + &, чтобы отвязать от текущей сессии Ansible
+    - name: Start application
+      shell: setsid make run > /dev/null 2>&1 &
+      args:
+        chdir: /app
+        executable: /bin/ash  
