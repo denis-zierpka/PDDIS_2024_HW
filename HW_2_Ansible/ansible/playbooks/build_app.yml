@@ -1,0 +1,36 @@
+---
+- name: Build application
+  hosts: all
+  gather_facts: False
+
+  tasks:
+    - name: Remove existing .git folder
+      file:
+        path: /app/.git
+        state: absent
+      ignore_errors: yes
+
+    - name: Create app directory if not exist
+      file:
+        path: /app
+        state: directory
+
+    - name: Clone repository
+      git:
+        repo: 'https://github.com/denis-zierpka/TestApplication.git'
+        dest: /app
+        update: yes
+
+    - name: Install needed apk
+      apk:
+        name: 
+          - make
+          - python3 
+          - py3-pip
+        update_cache: yes
+
+    - name: Install requirements
+      command: python3 -m pip install flask
+
+
+      
