@@ -1,0 +1,77 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'maven'
+        allure 'allure'  
+    }
+
+    environment {
+        DOCKER_CREDENTIALS = credentials('docker-credentials-id') 
+    }
+
+    stages {
+        stage('Clean') {
+            steps {
+                dir('HW_4_Jenkins') {
+                    sh 'mvn clean'
+                }
+            }
+        }
+
+        stage('Test and allure') {
+            steps {
+                dir('HW_4_Jenkins') {
+                    sh 'mvn test'
+                }
+            }
+            post {
+                always {
+                    dir('HW_4_Jenkins') {
+                        allure (
+                            results: [[path: 'target/allure-results']]
+                        )
+                    }
+                }
+            }
+        }
+
+        stage('SonarQube') {
+            steps {
+                dir('HW_4_Jenkins') {
+                    withSonarQubeEnv("SonarQube_server") {
+                        script {
+                            sh 'mvn clean package sonar:sonar'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Build docker') {
+            steps {
+                sh 'docker build -t deniszierpka/pddis_2024_hw-just-server:latest .'
+            }
+        }
+
+        stage('Login') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-credentials-id', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin"
+                }
+            }
+        }
+
+        stage('Push docker') {
+            steps {
+                sh 'docker push deniszierpka/pddis_2024_hw-just-server:latest'
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker logout'
+        }
+    }
+}

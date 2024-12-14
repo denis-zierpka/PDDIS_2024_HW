@@ -9,3 +9,5 @@
 
 1. [Домашнее задание №3 - Docker](./HW_3_Docker/README.md)
 
+1. [Домашнее задание №4 - Jenkins](./HW_4_Jenkins/README.md)
+
